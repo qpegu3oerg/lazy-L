@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        --s: 200px;
+        /* control the size */
+        --c1: #1d1d1d;
+        --c2: #4e4f51;
+        --c3: #3c3c3c;
+        background:
+          repeating-conic-gradient(from 30deg, #0000 0 120deg, var(--c3) 0 180deg) calc(.5*var(--s)) calc(.5*var(--s)*0.577),
+          repeating-conic-gradient(from 30deg, var(--c1) 0 60deg, var(--c2) 0 120deg, var(--c3) 0 180deg);
+        background-size: var(--s) calc(var(--s)*0.577);
+        /* 0.577 = tan(30deg)*/
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 400px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      #output {}
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .output {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      .tickmark {
+        color: #4caf50;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Lazy L</h1>
+      <form id="seriesForm">
+        <input type="text" id="seriesName" placeholder="Series name" required />
+        <input type="number" id="seasonNumber" placeholder="Season number" required />
+        <input type="number" id="startEpisodeNumber" placeholder="Starting episode number" />
+        <button type="submit">Submit</button>
+        <p class="output" id="output"></p>
+      </form>
+      <button id="nextEpisode">Next Episode</button>
+      <button id="copyToClipboard">Copy to Clipboard</button>
+    </div>
+    <script>
+      let seriesName = '';
+      let seasonNumber = '';
+      let episodeNumber = 1;
+      document.getElementById('seriesForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        seriesName = document.getElementById('seriesName').value;
+        seasonNumber = document.getElementById('seasonNumber').value.padStart(2, '0');
+        episodeNumber = document.getElementById('startEpisodeNumber').value || 1;
+        document.getElementById('output').textContent = `${seriesName} S${seasonNumber}E${String(episodeNumber).padStart(2, '0')}`;
+      });
+      document.getElementById('nextEpisode').addEventListener('click', function() {
+        if (!seriesName || !seasonNumber) {
+          alert('Please enter the series name and season number first.');
+          return;
+        }
+        episodeNumber++;
+        document.getElementById('output').textContent = `${seriesName} S${seasonNumber}E${String(episodeNumber).padStart(2, '0')}`;
+      });
+      document.getElementById('copyToClipboard').addEventListener('click', function() {
+        if (!seriesName || !seasonNumber) {
+          alert('Please enter the series name and season number first.');
+          return;
+        }
+        const tickMark = document.createElement('span');
+        tickMark.classList.add('tickmark');
+        tickMark.textContent = '✓';
+        navigator.clipboard.writeText(`${seriesName} S${seasonNumber}E${String(episodeNumber).padStart(2, '0')}`).then(() => {
+          document.getElementById('output').appendChild(tickMark);
+        }).catch(err => console.error('Could not copy text: ', err));
+      });
+    </script>
+  </body>
+</html>
